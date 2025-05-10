@@ -24,3 +24,23 @@ def get_poster_url(poster_api_path, size="w500"):
 
     base_url = "https://image.tmdb.org/t/p/"
     return f"{base_url}{size}/{poster_api_path.lstrip('/')}"  # ✅ Usunięcie zbędnego ukośnika
+
+def get_movies(how_many):
+    data = get_popular_movies()
+    return data[:how_many]
+
+def get_single_movie(movie_id):
+    endpoint = f"https://api.themoviedb.org/3/movie/{movie_id}"
+    headers = {
+        "Authorization": f"Bearer {API_TOKEN}"
+    }
+    response = requests.get(endpoint, headers=headers)
+    return response.json()
+
+def get_single_movie_cast(movie_id):
+    endpoint = f"https://api.themoviedb.org/3/movie/{movie_id}/credits"
+    headers = {
+        "Authorization": f"Bearer {API_TOKEN}"
+    }
+    response = requests.get(endpoint, headers=headers)
+    return response.json()["cast"]

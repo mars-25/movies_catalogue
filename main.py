@@ -3,22 +3,22 @@ import tmdb_client  # Import funkcji do pobierania filmów z TMDb
 
 app = Flask(__name__)
 
+@app.context_processor
+def utility_processor():
+    """Dodaje funkcję `tmdb_image_url` do dostępnych funkcji w szablonie."""
+    def tmdb_image_url(path, size="w500"):
+        return tmdb_client.get_poster_url(path, size)
+    return {"tmdb_image_url": tmdb_image_url}  # ✅ Dzięki temu można używać tej funkcji w HTML
+
 @app.route('/')
 def homepage():
-    try:
-        # ✅ Pobranie rzeczywistych popularnych filmów z API TMDb
-        movies_data = tmdb_client.get_popular_movies()
-
-        # 📌 Przetwarzanie danych — wyciągnięcie tytułu i plakatu
-        movies = [{"title": movie.get("title", "Brak tytułu"), 
-                   "image": tmdb_client.get_poster_url(movie.get("poster_path", ""), "w500")}
-                  for movie in movies_data]
-
-    except Exception as e:
-        print(f"⚠️ Błąd pobierania danych: {e}")  # 🔍 Wyświetlanie błędu w konsoli
-        movies = []  # 📌 Jeśli coś pójdzie nie tak, strona nie zawiesi się!
-
+    movies = tmdb_client.get_movies(how_many=13)
     return render_template("homepage.html", movies=movies)
+
+@app.route("/movie/<movie_id>")
+def movie_details(movie_id):
+    details = tmdb_client.get_single_movie(movie_id)
+    return render_template("movie_details.html", movie=details)
 
 if __name__ == '__main__':
     app.run(debug=True)
