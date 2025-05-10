@@ -12,7 +12,15 @@ def utility_processor():
 
 @app.route('/')
 def homepage():
-    list_type = request.args.get("list_type", "popular")  # ✅ Pobiera kategorię filmów z URL-a (np. ?list_type=top_rated)
+    # Lista dozwolonych typów list filmów
+    movie_categories = ["popular", "top_rated", "now_playing", "upcoming"]
+    
+    # Pobieramy wartość list_type z parametru URL
+    list_type = request.args.get("list_type", "popular")
+    
+    # 🚀 Walidacja: jeśli użytkownik poda błędną kategorię, ustawiamy "popular"
+    if list_type not in movie_categories:
+        list_type = "popular"
 
     try:
         movies_data = tmdb_client.get_movies(12, list_type)  # ✅ Pobiera filmy zgodnie z wybraną kategorią
@@ -21,7 +29,7 @@ def homepage():
         print(f"⚠️ Błąd pobierania danych: {e}")
         movies_data = []
 
-    return render_template("homepage.html", movies=movies_data, list_type=list_type)
+    return render_template("homepage.html", movies=movies_data, list_type=list_type, movie_categories=movie_categories)
 
 @app.route("/movie/<movie_id>")
 def movie_details(movie_id):

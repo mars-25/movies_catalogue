@@ -1,6 +1,9 @@
 import requests
+import os 
+from dotenv import load_dotenv 
+load_dotenv() #Wczytuje zmienne z pliku .env
 
-API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYWQ2ODkzYjAyNzc3MmNlZjkxOWMxMzk1MDA4MGRhMiIsIm5iZiI6MTc0Njc4MTA4OC41NTksInN1YiI6IjY4MWRjM2EwN2YyNGFkYzU5ODNlY2M2YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.opLOBbk-AF07wqzzR0_HGgP72lqpkpwCaSdKoBcY_zA"  # Zamień na rzeczywisty token API
+API_TOKEN = os.getenv("TMDB_API_TOKEN")
 
 def get_movies_list(list_type="popular"):
     """Pobiera listę filmów z wybranego endpointu TMDb (np. 'popular', 'top_rated', 'now_playing')."""
