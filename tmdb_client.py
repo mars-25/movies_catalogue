@@ -6,16 +6,24 @@ load_dotenv() #Wczytuje zmienne z pliku .env
 API_TOKEN = os.getenv("TMDB_API_TOKEN")
 
 def get_movies_list(list_type="popular"):
-    """Pobiera listę filmów z wybranego endpointu TMDb (np. 'popular', 'top_rated', 'now_playing')."""
+    """Pobiera listę filmów z TMDb."""
     endpoint = f"https://api.themoviedb.org/3/movie/{list_type}"
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
 
     try:
         response = requests.get(endpoint, headers=headers)
-        response.raise_for_status()  # ✅ Sprawdza błędy HTTP (np. 401, 404)
-        return response.json().get("results", [])  # ✅ Pobiera tylko listę filmów
+        response.raise_for_status()
+
+        data = response.json()  # Pobranie danych z API
+
+        # 🔹 Sprawdź, czy `data` jest słownikiem, jeśli tak, pobierz 'results'
+        if isinstance(data, dict) and "results" in data:
+            return data["results"]
+        
+        return data  # Jeśli nie ma 'results', zwróć oryginalną wartość
+
     except requests.exceptions.RequestException as e:
-        print(f"⚠️ Błąd API TMDb: {e}")
+        print(f"Błąd pobierania danych z TMDb: {e}")
         return []
 
 def get_movies(how_many, list_type="popular"):
@@ -57,3 +65,10 @@ def get_poster_url(poster_api_path, size="w500"):
 
     base_url = "https://image.tmdb.org/t/p/"
     return f"{base_url}{size}/{poster_api_path.lstrip('/')}"  # ✅ Usunięcie zbędnego ukośnika
+
+def get_movie_images(movie_id):
+    endpoint = f"https://api.themoviedb.org/3/movie/{movie_id}/images"
+    headers = {"Authorization": f"Bearer {API_TOKEN}"}
+    response = requests.get(endpoint, headers=headers)
+    response.raise_for_status()
+    return response.json()
