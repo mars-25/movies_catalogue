@@ -1,3 +1,4 @@
+#main.py  
 from flask import Flask, render_template, request
 import tmdb_client  # Import funkcji do pobierania filmów z TMDb
 
